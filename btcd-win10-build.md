@@ -1,4 +1,4 @@
-### Building Btcd for Windows 10
+## Building Btcd for Windows 10
 
 The latest `btcd` release [build](https://github.com/btcsuite/btcd/releases) is from 2015. There's nice description how to build it for Linux/Mac, but for Windows it's suggested to download the latest binaries, which are 608 commits behind master as of December 2017. Fortunately, Golang can build binaries equally well on Windows, so we may follow the steps of the Linux build process. The only issue I faced was a bug in the glide dependency manager and that's how this little blog post is born.
 
@@ -32,3 +32,24 @@ c:\goprojects\src\github.com\Masterminds\glide> go install
 ```
 
 And we're ready to run `glide install` again in the btcd folder and everything should be OK.
+
+### One Tip Download the blockchain on another drive
+
+If we want to change the default folder where `btcd` will download and store the blockchain, we can create a symbolic link, similar to `ln -s` in Linux. I wanted to change it, because I have a small 128GB SSD drive for booting Windows (C:) and 1TB spinning drive (D:) where I would like to store the data.
+
+By default `btcd` stores the blockchain in `c:\Users\your-user\AppData\Local\Btcd\data`. If we want to move that directory to `D:` without disturbing the `btcd` work, we can create a symbolic link with the following command:
+
+First create a folder on drive (D:) where we'll store the blockchain, for example:
+```
+d:\> mkdir btcd-data
+```
+Next, we must rename the currently `data` folder created by `btcd`:
+```
+c:\Users\your-user\AppData\Local\Btcd> move data data-original
+```
+And create the symbolic link:
+```
+c:\Users\your-user\AppData\Local\Btcd> mklink /d "data" "d:\btcd-data"
+```
+
+Now, from `btcd` perspective it still has its `data` directory where it expects it to be, but the data will actually be stored on the drive D:
